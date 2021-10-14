@@ -45,14 +45,14 @@ pr3.then((data)=> {
 // и возвращает строку 'Promise Data'
 // Получите данные промиса и выведите их в консоль
 
-let pr4 = new Promise((resolve, reject)=>{
-    setTimeout(()=> {
-        resolve('Promise resolve')
-    },3000)
-})
-pr4.then((data)=> {
-    console.log(data)
-})
+// let pr4 = new Promise((resolve, reject)=>{
+//     setTimeout(()=> {
+//         resolve('Promise resolve')
+//     },3000)
+// })
+// pr4.then((data)=> {
+//     console.log(data)
+// })
 
 
 
@@ -69,23 +69,23 @@ pr4.then((data)=> {
 // свойства resolve и reject получают ссылки на соответствующие функции
 // resolve и reject. Следующие два обработчика запускают методы resolve и reject.
 
-// type HandlePromiseType={
-//     promise: null | {}
-//     resolve: () => void | null
-//     reject:() => void | null
-//     onSuccess:()=> void
-//     onError:()=> void
-// }
+type HandlePromiseType={
+    promise: null | Promise<any>
+    resolve: null | Function
+    reject: null | Function
+    onSuccess:(paramName: string)=> void
+    onError:(paramName: string)=> void
+}
 
 
-let handlePromise = {
+let handlePromise: HandlePromiseType = {
     promise : null,
     resolve: null,
     reject: null,
-    onSuccess(paramName:any){
+    onSuccess(paramName:string){
         console.log(`Promise is resolved with data: ${paramName}`)
     },
-    onError(paramName:any){
+    onError(paramName:string){
         console.log(`Promise is rejected with error: ${paramName}`)
     }
 
@@ -93,20 +93,21 @@ let handlePromise = {
 
 
 export const createHandler = () => {
-    //@ts-ignore
     handlePromise.promise = new Promise((resolve, reject)=>{
-        //@ts-ignore
-        handlePromise.resolve = resolve
-        //@ts-ignore
-        handlePromise.reject = reject
-        console.log('Promise create')
+        handlePromise.resolve = resolve;
+        handlePromise.reject = reject;
     })
+    handlePromise.promise
+        .then(handlePromise.onSuccess)
+        .catch(handlePromise.onError)
+    //@ts-ignore
+    window.handle = handlePromise.promise
 }
 export const resolveHandler = () => {
-    handlePromise.onSuccess('Hello')
+    handlePromise.resolve && handlePromise.resolve('1')
 }
 export const rejectHandler = () => {
-    handlePromise.onError('Bye')
+   handlePromise.reject && handlePromise.reject('0')
 }
 
 
@@ -118,11 +119,66 @@ export const rejectHandler = () => {
 // Добавьте два метода then и передайте созданные функции.
 
 
+let prom = new Promise((res, rej) =>{
+    setTimeout(()=>{
+        res('My name is ')
+    },1000)
+})
+
+const onSuccess = (param:any) => {
+    return param + 'Ingvarr!'
+}
+const print = (param:any)=>{
+    console.log(param)
+}
+prom.then((response) => {
+   return onSuccess(response)
+}).then((response) => {
+    print(response)
+})
+
+
+
 // Task 7
 // Создайте три промиса. Первый промис возвращает объект { name: "Anna" } через 2с,
 // второй промис возвращает объект {age: 16} через 3 с, а третий {city: ''} через 4с.
 // Получите результаты работы промисов, объедините свойства объектов
 // и выведите в консоль {name, age, city}
+
+let result:any = {}
+
+const assainPropery = (obj:any) => {
+    Object.assign(result, obj)
+}
+
+let p1 = new Promise((resolve, reject)=>{
+    setTimeout(()=>{
+        resolve({name: 'Anna'})
+    },2000)
+})
+p1.then((obj)=> {
+    assainPropery(obj)
+})
+let p2 = new Promise((resolve, reject)=>{
+    setTimeout(()=>{
+        resolve({age: 16})
+    },3000)
+})
+p2.then((obj)=> {
+    assainPropery(obj)
+})
+
+let p3 = new Promise((resolve, reject)=>{
+    setTimeout(()=>{
+        resolve({city: ''})
+    },4000)
+})
+p3.then((obj)=> {
+    assainPropery(obj)
+    console.log(result)
+})
+
+
 
 
 
