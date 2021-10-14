@@ -16,25 +16,100 @@ const Lesson3 = () => {
     const [serachResult, setSerachResult] = useState("");
     const [searchNameByType, setSearchNameByType] = useState("");
     const [serachResultByType, setSerachResultByType] = useState("");
-    const [poster, setPoster] = useState("")
+    const [poster, setPoster] = useState<Array<MovieDescriptionType>>([])
     const [posters, setPosters] = useState<Array<MovieDescriptionType>>([])
 
 
-    const searchFilm = () => {
-        API.searchFilmsByTitle(searchName)
-            .then((response) => {
-                setSerachResult(JSON.stringify(response.data))
-                setPoster(response.data.Poster)
-            })
+    // const searchFilm = () => {
+    //     API.searchFilmsByTitle(searchName)
+    //         .then(({data}) => {
+    //             const {Search, Error, Response} = data
+    //             if(Response === 'True'){
+    //                 setSerachResult(JSON.stringify(Search))
+    //                 setPoster(Search)
+    //             }
+    //             else{
+    //                 setSerachResult(Error)
+    //             }
+    //
+    //         })
+    // };
+
+
+    // const searchFilm = async () => {
+    //     try{
+    //         const {data} = await API.searchFilmsByTitle(searchName)
+    //         const {Search, Error, Response} = data
+    //         if (Response === "True") {
+    //             setSerachResult(JSON.stringify(Search))
+    //             setPoster(Search)
+    //         } else {
+    //             setSerachResult(Error)
+    //         }
+    //
+    //     }
+    //     catch (e){
+    //         console.log(e)
+    //     }
+    // };
+
+
+    const searchFilm = async () => {
+        const {data} = await API.searchFilmsByTitle(searchName)
+        const {Search, Error, Response} = data
+        if (Response === "True") {
+            setSerachResult(JSON.stringify(Search))
+            setPoster(Search)
+        } else {
+            setSerachResult(Error)
+        }
     };
 
-    const searchByType = (e: React.MouseEvent<HTMLButtonElement>) => {
+// const searchByType = (e: React.MouseEvent<HTMLButtonElement>) => {
+//     const type: string = e.currentTarget.dataset.t ? e.currentTarget.dataset.t : "";
+//     API.searchFilmsByType(searchNameByType, type)
+//         .then(({data}) => {
+//             const {Search, Error, Response} = data
+//             if (Response === "True") {
+//                 setSerachResultByType(JSON.stringify(Search))
+//                 setPosters(Search)
+//             } else {
+//                 setSerachResult(Error)
+//             }
+//             setPosters(Search)
+//         })
+// }
+
+
+    // const searchByType = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    //     try {
+    //         const type: string = e.currentTarget.dataset.t ? e.currentTarget.dataset.t : "";
+    //         const {data} = await API.searchFilmsByType(searchNameByType, type)
+    //         const {Search, Error, Response} = data
+    //         if (Response === "True") {
+    //             setSerachResultByType(JSON.stringify(Search))
+    //             setPosters(Search)
+    //         } else {
+    //             setSerachResult(Error)
+    //         }
+    //         setPosters(Search)
+    //     } catch (e) {
+    //         console.log(e)
+    //     }
+    // }
+
+
+    const searchByType = async (e: React.MouseEvent<HTMLButtonElement>) => {
         const type: string = e.currentTarget.dataset.t ? e.currentTarget.dataset.t : "";
-        API.searchFilmsByType(searchNameByType, type)
-            .then((response) => {
-                setSerachResultByType(JSON.stringify(response.data))
-                setPosters(response.data.Search)
-            })
+        const {data} = await API.searchFilmsByType(searchNameByType, type)
+        const {Search, Error, Response} = data
+        if (Response === "True") {
+            setSerachResultByType(JSON.stringify(Search))
+            setPosters(Search)
+        } else {
+            setSerachResult(Error)
+        }
+        setPosters(Search)
     }
 
     return (
@@ -46,7 +121,11 @@ const Lesson3 = () => {
                 <button onClick={searchFilm}>Search</button>
                 <div>
                     {serachResult}
-                    <img src={poster} alt=""/>
+                    {poster.map(poster => {
+                        return (
+                            <img key={poster.Poster} src={poster.Poster} alt=""/>
+                        )
+                    })}
                 </div>
             </div>
 
@@ -59,8 +138,8 @@ const Lesson3 = () => {
                 <div>
                     {serachResultByType}
                     {posters.map(poster => {
-                        return(
-                            <img src={poster.Poster} alt=""/>
+                        return (
+                            <img key={poster.Poster} src={poster.Poster} alt=""/>
                         )
                     })}
                 </div>
